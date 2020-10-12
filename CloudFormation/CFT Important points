@@ -1,0 +1,65 @@
+{
+   "AWSTemplateFormatVersion":"2010-09-09", <--------------- This is template version if you dont define AWS will take latest one.
+   -------------------------------------------------------- Parameter Block to define variables
+   
+   
+   "Parameters": {
+      --------------------------------------------------------
+      "InstanceType" : { <----------- variable 1
+         "Description" : "Type of EC2 instance",            Defined a variable for InstanceType
+         "Type": "String",
+         "Default": "t2.micro"
+      }, <------- make sure add ,(comma) after the block but dont add comma(,) in last variable of the block
+       --------------------------------------------------------
+     
+     "KeyName" : { <----------- variable 2
+         "Description" : "key name",
+         "Type": "String",
+         "Default": "mayur"
+      }
+   },
+   
+   -------------------------------------------------------- Here we will define our all the resources
+      ------------------------------------------------------ Resource 1 Security Group
+   "Resources" : {
+   "InstanceSecurityGroup":{
+      "Type":"AWS::EC2::SecurityGroup",
+      "Properties":{
+         "GroupDescription":"Allow http to client host",
+         "VpcId":"vpc-c16faeaa",
+         "SecurityGroupIngress":[
+            {
+               "IpProtocol":"tcp",
+               "FromPort":80,
+               "ToPort":80,
+               "CidrIp":"0.0.0.0/0"
+            }
+         ],
+         "SecurityGroupEgress":[
+            {
+               "IpProtocol":"tcp",
+               "FromPort":80,
+               "ToPort":80,
+               "CidrIp":"0.0.0.0/0"
+            }
+         ]
+      }
+ },
+ 
+   -------------------------------------------------------- Resource 2 EC2 Instance
+  "MyEC2":{  <---------------- This resource Name
+     "Type" : "AWS::EC2::Instance",   <---------------- This is resource Type
+     "Properties" : { <---------------- This is resource properties
+         "ImageId" : "ami-03657b56516ab7912",
+         "InstanceType" : { "Ref": "InstanceType"}, <------------------ { "Ref": "InstanceType"} here I have called my parameter which is defined in parameter block.
+         "KeyName" : { "Ref": "KeyName" },
+         "SecurityGroupIds" : [ "sg-0193b51d447745495" ],
+         "SubnetId" : "subnet-deba52b5",
+         "Tags" : [ 
+           { "Key": "Name", "Value": "Mayur"}
+         ]
+
+         }
+    }
+  }
+}
