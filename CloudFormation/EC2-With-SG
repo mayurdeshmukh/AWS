@@ -1,21 +1,27 @@
 {
-   "AWSTemplateFormatVersion":"2010-09-09",
-   "Mappings" : {
-      "RegionMap" : {
+   "AWSTemplateFormatVersion":"2010-09-09",                               ## This is template version 
+   
+  ##########################################################################################
+  
+  "Mappings" : {                                                          ## These are mappings used to map values according to aws regions. In this example 
+      "RegionMap" : {                                                        it will select ami value according region automatically.
         "us-east-1"      : { "AMI" : "ami-0ff8a91507f77f867"},
         "us-west-1"      : { "AMI" : "ami-0bdb828fd58c52235"},
         "eu-west-1"      : { "AMI" : "ami-047bb4163c506cd98"},
         "ap-southeast-1" : { "AMI" : "ami-08569b978cc4dfa10"},
         "ap-northeast-1" : { "AMI" : "ami-06cd52961ce9f0d85"},
-        "us-east-2"      : {"AMI"  : "ami-0b59bfac6be064b78"}
+        "us-east-2"      : { "AMI"  :"ami-0b59bfac6be064b78"}
       }
     },
 
-   "Parameters": {
+  ##########################################################################################
+  
+   "Parameters": {                                                      ## These is parameters section. here I have given 2 variables.
       "InstanceType" : {
          "Description" : "Type of EC2 instance",
-         "Type": "String",
-         "Default": "t2.micro"
+         "Type": "String",                                        
+         "Default": "t2.micro",
+         "AllowedValues" : ["t2.micro", "m1.small", "m1.large", "t2.medium"]   ## These are the allowed values for a resource and I will give drop down menu as well.
       },
       "KeyName" : {
          "Description" : "key name",
@@ -23,8 +29,11 @@
          "Default": "mayur"
       }
    },
-   "Resources" : {
-   "InstanceSecurityGroup":{
+   
+     ##########################################################################################
+     
+   "Resources" : {                                                     ## This is resource section. We will define all the resources here.
+   "InstanceSecurityGroup":{                                              I have created Security Group and EC2 instance.
       "Type":"AWS::EC2::SecurityGroup",
       "Properties":{
          "GroupDescription":"Allow http to client host",
@@ -48,13 +57,14 @@
       }
  },
  
+########  Resource 1 definition is complete. and 2nd is starting from below
 
   "MyEC2":{
      "Type" : "AWS::EC2::Instance",
      "Properties" : {
-         "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "AMI"]},
-         "InstanceType" : { "Ref": "InstanceType"},
-         "KeyName" : { "Ref": "KeyName" },
+         "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "AMI"]},   ## Here i am accessing value from our map. to access value we have to use 
+         "InstanceType" : { "Ref": "InstanceType"},                                              a function "Fn::FindInMap"
+         "KeyName" : { "Ref": "KeyName" },                                                    ##  Calling variable here by giving refrence
          "SecurityGroupIds" : [ "sg-0193b51d447745495" ],
          "SubnetId" : "subnet-deba52b5",
          "Tags" : [ 
@@ -64,7 +74,11 @@
          }
     }
   },
-  "Outputs":{
+  
+    ##########################################################################################
+    
+    
+  "Outputs":{                                                                               ## This section is used for outputs.
    "InstanceId" : {
       "Description" : "ID of ec2",
       "Value" : {
@@ -75,9 +89,9 @@
     "PublicDnsName" : {
       "Description" : "ID of ec2",
       "Value" : {
-         "Fn::GetAtt": [
-            "MyEC2",
-            "PublicDnsName"
+         "Fn::GetAtt": [                                                                    ## The retrieve output here i am using a function GetAtt. The workflow is
+            "MyEC2",                                                                           provide logical name(name of resource) in my case it is MyEC2 after that
+            "PublicDnsName"                                                                    values that you want fetch
          ]
       }
     },
